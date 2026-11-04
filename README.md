@@ -5,10 +5,10 @@
 터미널·Docker·Git을 직접 세팅하여 "내 컴퓨터에서만 돌아가는" 문제를 줄이고, 누구나 동일하게 실행·배포·디버깅할 수 있는 재현 가능한 개발 환경을 구축한다. 웹 서버를 컨테이너화하고 포트 매핑·볼륨으로 접속과 데이터 영속성을 직접 검증한다.
 
 ### 실행 환경
-- OS: Ubuntu 22.04
+- OS: Ubuntu 26.04.1 LTS
 - Shell: bash
-- Docker: 26.x
-- Git: 2.x
+- Docker: 29.9.3
+- Git: 2.53.0
 
 ### 수행 항목 체크리스트
 - [x] 터미널 기본 조작 및 폴더 구성
@@ -22,18 +22,95 @@
 - [x] Git 설정 + VSCode GitHub 연동
 
 ### 검증 방법(어떤 명령으로 무엇을 확인했는지) + 결과 위치 링크
+- 1. 현재 위치 확인
+root@GNIA-C202-G05:~/custom-nginx# pwd
+/root/custom-nginx
+
+- 2. 실습 폴더 만들고 이동
+root@GNIA-C202-G05:~/custom-nginx# mkdir terminal-practice
+root@GNIA-C202-G05:~/custom-nginx# cd terminal-practice
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice#
+
+- 3. 현재 위치 다시 확인 (바뀌었는지)
+/root/custom-nginx/terminal-practice
+
+- 4. 테스트 파일 생성
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# echo "hello docker" > test.txt
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice#
+
+- 5. 파일 목록 확인 (숨김파일 포함)
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# ls -al
+total 12
+drwxr-xr-x 2 root root 4096 Nov  4 22:45 .
+drwxr-xr-x 4 root root 4096 Nov  4 22:44 ..
+-rw-r--r-- 1 root root   13 Nov  4 22:45 test.txt
+
+- 6. 파일 복사
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# cp test.txt copy.txt
+
+- 7. 복사 결과 확인
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# ls -l
+total 8
+-rw-r--r-- 1 root root 13 Nov  4 22:46 copy.txt
+-rw-r--r-- 1 root root 13 Nov  4 22:45 test.txt
+
+- 8. 파일 이름 변경(이동)
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# mv copy.txt renamed.txt
+
+- 9. 변경 결과 확인
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# ls -l
+total 8
+-rw-r--r-- 1 root root 13 Nov  4 22:46 renamed.txt
+-rw-r--r-- 1 root root 13 Nov  4 22:45 test.txt
+
+- 10. 파일 삭제
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# rm renamed.txt
+
+- 11. 삭제 결과 확인
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# ls -l
+total 4
+-rw-r--r-- 1 root root 13 Nov  4 22:45 test.txt
 
 
 ### 트러블슈팅 2건 이상(문제 → 원인 가설 → 확인 → 해결/대안)
 - docker logs 인자 누락 오류
-- 증상: `docker logs` 실행 시 "requires 1 argument" 오류
-- 원인: 컨테이너 이름/ID를 지정하지 않음
-- 해결: `docker logs gallant_davinci` 처럼 이름 지정 후 실행
+증상: `docker logs` 실행 시 "requires 1 argument" 오류
+원인: 컨테이너 이름/ID를 지정하지 않음
+해결: `docker logs gallant_davinci` 처럼 이름 지정 후 실행
 
-
+- 바인드 마운트 후 웹 페이지 한글 깨짐
+증상: 바인드 마운트로 수정한 index.html을 브라우저에서 열자 한글이 � 형태로 깨져 출력됨
+원인: HTML 문서에 문자 인코딩(charset) 선언이 없어 브라우저가 인코딩을 잘못 해석한 것으로 추정
+확인: 원본 index.html에는 <meta charset="UTF-8"> 선언이 있었으나, 수정본에서 해당 선언이 누락된 것을 확인
+해결: charset 선언이 포함된 원본으로 복원 후 브라우저에서 한글이 정상 출력됨을 확인
 
 ## 2. 터미널 조작 로그(터미널에서 수행한 핵심 명령과 출력 결과를 기술 문서에 기록한다.)
-(핵심 명령 + 출력 결과)
+
+| 단계 | 명령 | 목적 |
+|------|------|------|
+| 1 | `pwd` | 현재 위치 확인 |
+| 2 | `mkdir` / `cd` | 폴더 생성·이동 |
+| 3 | `echo "..." > test.txt` | 리다이렉션으로 파일 생성 |
+| 4 | `ls -al` | 숨김파일 포함 목록 확인 |
+| 5 | `cp` | 파일 복사 |
+| 6 | `mv` | 이름 변경(이동) |
+| 7 | `rm` | 파일 삭제 |
+| 8 | `chmod` | 권한 변경 |
+
+### 권한 변경(chmod) 실습 — 변경 전/후 비교
+
+```bash
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# chmod 644 test.txt
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# ls -l test.txt
+-rw-r--r-- 1 root root 13 Nov  4 22:45 test.txt      # 변경 전: 실행권한 없음
+
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# chmod +x test.txt
+root@GNIA-C202-G05:~/custom-nginx/terminal-practice# ls -l test.txt
+-rwxr-xr-x 1 root root 13 Nov  4 22:45 test.txt      # 변경 후: 실행권한(x) 추가됨
+```
+
+> `chmod +x`로 소유자·그룹·기타 사용자 모두에게 실행 권한(x)이 
+> 추가되어 `rw-r--r--` → `rwxr-xr-x`로 변화함을 확인 ✅
 
 ## 3. Docker 운영/검증 로그
 - docker --version
@@ -226,6 +303,7 @@ root@GNIA-C202-G05:~/custom-nginx# curl http://localhost:8080
 ![alt text](image-1.png)
 
 ## 6. 바인드 마운트 반영 + 볼륨 영속성 증거
+![alt text](image-2.png)
 바인드 마운트: 실행 명령 + 호스트 변경 전/후 비교
 Docker 볼륨: 생성/연결/검증 명령 + 컨테이너 삭제 전/후 비교
 
