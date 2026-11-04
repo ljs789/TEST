@@ -223,7 +223,7 @@ root@GNIA-C202-G05:~/custom-nginx# curl http://localhost:8080
 > 커스텀 index.html 정상 응답 확인 ✅
 
 ## 5. 포트 매핑 접속 증거
-p <host_port>:<container_port>로 실행 후, 브라우저 접속 화면(주소창 포함)을 기술 문서에 첨부한다.
+![alt text](image-1.png)
 
 ## 6. 바인드 마운트 반영 + 볼륨 영속성 증거
 바인드 마운트: 실행 명령 + 호스트 변경 전/후 비교
