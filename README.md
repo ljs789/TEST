@@ -308,5 +308,15 @@ root@GNIA-C202-G05:~/custom-nginx# curl http://localhost:8080
 Docker 볼륨: 생성/연결/검증 명령 + 컨테이너 삭제 전/후 비교
 
 ## 7. Git 설정 및 GitHub/VSCode 연동 증거
-Git 사용자 정보·기본 브랜치 설정 후, VSCode에서 GitHub 로그인 및 저장소 연동 완료
-민감한 개인 정보(ID/PW, 토큰 등)가 포함되지 않도록 주의한다
+- 사용자 이름 및 이메일 설정
+user.name=이재성
+user.email=qwer94947@gmail.com
+
+- 기본 브랜치 설정
+init.defaultbranch=master
+
+- 원격 저장소 연결 상태
+remote.origin.url=https://github.com/ljs789/TEST.git
+
+- GitHub/VScode 연동 증거
+![alt text](image-3.png)
